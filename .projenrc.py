@@ -1,4 +1,7 @@
-from projen import SampleDir, SampleFile, YamlFile, TomlFile, IniFile
+import subprocess
+from typing import List, Tuple
+
+from projen import IniFile, SampleDir, TomlFile, YamlFile
 from projen.python import PythonProject
 
 MODULE_NAME = "projen_template"
@@ -6,6 +9,12 @@ MODULE_NAME = "projen_template"
 # Folders holding all our modules with code.
 ROOT_MODULE_DIR = "src"
 ROOT_TEST_DIR = "tests"
+
+
+def exec(command: List[str]) -> Tuple[bytes, bytes]:
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = process.communicate()
+    return stdout, stderr
 
 
 class PythonRepoAnalyzerProject(PythonProject):
@@ -29,8 +38,7 @@ class PythonRepoAnalyzerProject(PythonProject):
             self.add_pre_commit()
 
     def add_black(self):
-        """Add black to the project as a dev dependency.
-        """
+        """Add black to the project as a dev dependency."""
         self.black = True
         self.add_dev_dependency("black@^22")
 
@@ -136,6 +144,23 @@ class PythonRepoAnalyzerProject(PythonProject):
         )
 
         self.add_dev_dependency("pre-commit@^2")
+
+    def setup_pre_commit(self):
+        command = ["pre-commit", "install"]
+        self.logger.info("Setting up a git hook scropts for pre-commit...")
+        self.logger.info(f"install | {' '.join(command)}")
+
+        info, error = exec(command)
+
+        if info:
+            self.logger.info(info.decode('utf-8'))
+        elif error:
+            self.logger.error(error.decode('utf-8'))
+
+    def post_synthesize(self):
+        super(PythonRepoAnalyzerProject, self).post_synthesize()
+        if self.pre_commit:
+            self.setup_pre_commit()
 
 
 project = PythonRepoAnalyzerProject(
