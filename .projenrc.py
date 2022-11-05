@@ -1,4 +1,4 @@
-from projen import SampleDir, SampleFile, YamlFile, TomlFile
+from projen import SampleDir, SampleFile, YamlFile, TomlFile, IniFile
 from projen.python import PythonProject
 
 MODULE_NAME = "projen_template"
@@ -55,7 +55,7 @@ class PythonRepoAnalyzerProject(PythonProject):
         """Add isort to the project as a dev dependenncy.
         Create a simple configuration file to prevent conflicts with black.
         """
-        self.isort = TomlFile(
+        self.isort = IniFile(
             self,
             ".isort.cfg",
             obj={
@@ -114,6 +114,17 @@ class PythonRepoAnalyzerProject(PythonProject):
                     "rev": "5.0.4",
                     "hooks": [
                         {"id": "flake8"},
+                    ],
+                },
+            )
+
+        if self.isort:
+            contents["repos"].append(
+                {
+                    "repo": "https://github.com/PyCQA/isort",
+                    "rev": "5.10.1",
+                    "hooks": [
+                        {"id": "isort"},
                     ],
                 },
             )
