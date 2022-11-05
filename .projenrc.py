@@ -77,6 +77,7 @@ class PythonRepoAnalyzerProject(PythonProject):
 
     def add_pre_commit(self):
         """Add pre-commit the project as a dev dependenncy.
+        Install github pre-commit hooks.
         Add base configuration for installed tools. List of supported modules:
             * Default:
                 - trailing-whitespace,
@@ -85,7 +86,8 @@ class PythonRepoAnalyzerProject(PythonProject):
                 - check-added-large-files,
 
             * black,
-            * flake8.
+            * flake8,
+            * isort.
         """
         contents = {
             # src and test files.
