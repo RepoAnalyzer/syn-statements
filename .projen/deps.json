@@ -16,6 +16,11 @@
       "type": "devenv"
     },
     {
+      "name": "pre-commit",
+      "version": "^2",
+      "type": "devenv"
+    },
+    {
       "name": "projen",
       "version": "0.65.13",
       "type": "devenv"
