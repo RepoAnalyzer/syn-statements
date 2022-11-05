@@ -6,7 +6,7 @@ from setuptools import setup
 kwargs = json.loads(
     """
 {
-    "name": "projen-test3",
+    "name": "projen_template",
     "python_requires": ">=3.6",
     "author": "DeadlySquad13",
     "author_email": "46250621+DeadlySquad13@users.noreply.github.com",
