@@ -1,8 +1,10 @@
 {
   "files": [
+    ".flake8",
     ".gitattributes",
     ".github/workflows/pull-request-lint.yml",
     ".gitignore",
+    ".isort.cfg",
     ".pre-commit-config.yaml",
     ".projen/deps.json",
     ".projen/files.json",

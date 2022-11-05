@@ -86,4 +86,6 @@ dmypy.json
 
 cython_debug/
 .venv_win
+!/.flake8
+!/.isort.cfg
 !/.pre-commit-config.yaml

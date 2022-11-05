@@ -1,6 +1,4 @@
-import os
-
-from projen import SampleDir, SampleFile, YamlFile
+from projen import SampleDir, SampleFile, YamlFile, TomlFile
 from projen.python import PythonProject
 
 MODULE_NAME = "projen_template"
@@ -26,26 +24,36 @@ class PythonRepoAnalyzerProject(PythonProject):
             self.add_dev_dependency("black@^22")
 
         if flake8:
-            self.flake8 = SampleFile(
+            self.flake8 = TomlFile(
                 self,
                 ".flake8",
-                contents="\n".join(
-                    ["[flake8] max-line-length = 88", "extend-ignore = E203"]
-                ),
+                obj={
+                    "flake8": {
+                        "max-line-length": 88,
+                        "extend-ignore": "E203",
+                    },
+                },
             )
+
             self.add_dev_dependency("flake8@^5")
 
         if isort:
-            self.isort = SampleFile(
+            self.flake8 = TomlFile(
                 self,
                 ".isort.cfg",
-                contents="\n".join(["[settings]", 'profile = "black"']),
+                obj={
+                    "settings": {
+                        "profile": "black",
+                    },
+                },
             )
+
             self.add_dev_dependency("isort@^5")
 
         if pre_commit:
             contents = {
-                "files": f"{ROOT_MODULE_DIR}\/.*|{ROOT_TEST_DIR}\/.*",  # src and test files.
+                # src and test files.
+                "files": fr"{ROOT_MODULE_DIR}\/.*|{ROOT_TEST_DIR}\/.*",
                 "repos": [
                     {
                         "repo": "https://github.com/pre-commit/pre-commit-hooks",
