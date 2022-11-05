@@ -2,6 +2,7 @@ import pytest
 
 from projen_template.example import hello
 
+
 @pytest.mark.parametrize(
     ("name", "expected"),
     [
@@ -11,5 +12,6 @@ from projen_template.example import hello
     ],
 )
 def test_hello(name, expected):
+
     """Example test with parametrization."""
     assert hello(name) == expected

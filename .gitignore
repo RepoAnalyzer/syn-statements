@@ -85,4 +85,5 @@ dmypy.json
 .pytype/
 
 cython_debug/
+.venv_win
 !/.pre-commit-config.yaml

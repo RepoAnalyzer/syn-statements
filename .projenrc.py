@@ -5,6 +5,10 @@ from projen.python import PythonProject
 
 MODULE_NAME = "projen_template"
 
+# Folders holding all our modules with code.
+ROOT_MODULE_DIR = "src"
+ROOT_TEST_DIR = "tests"
+
 
 class PythonRepoAnalyzerProject(PythonProject):
     black = None
@@ -15,6 +19,7 @@ class PythonRepoAnalyzerProject(PythonProject):
 
     def __init__(self, black=True, flake8=True, isort=True, pre_commit=True, **options):
         super(PythonRepoAnalyzerProject, self).__init__(**options)
+        self.gitignore.exclude(".venv_win")
 
         if black:
             self.black = True
@@ -40,10 +45,11 @@ class PythonRepoAnalyzerProject(PythonProject):
 
         if pre_commit:
             contents = {
+                "files": f"{ROOT_MODULE_DIR}\/.*|{ROOT_TEST_DIR}\/.*",  # src and test files.
                 "repos": [
                     {
                         "repo": "https://github.com/pre-commit/pre-commit-hooks",
-                        "rev": "stable",
+                        "rev": "v2.3.0",
                         "hooks": [
                             {"id": "trailing-whitespace"},
                             {"id": "end-of-file-fixer"},
@@ -51,14 +57,14 @@ class PythonRepoAnalyzerProject(PythonProject):
                             {"id": "check-added-large-files"},
                         ],
                     }
-                ]
+                ],
             }
 
             if self.black:
                 contents["repos"].append(
                     {
                         "repo": "https://github.com/psf/black",
-                        "rev": "stable",
+                        "rev": "22.10.0",
                         "hooks": [
                             {"id": "black"},
                         ],
@@ -69,7 +75,7 @@ class PythonRepoAnalyzerProject(PythonProject):
                 contents["repos"].append(
                     {
                         "repo": "https://gitlab.com/pycqa/flake8",
-                        "rev": "stable",
+                        "rev": "5.0.4",
                         "hooks": [
                             {"id": "flake8"},
                         ],
@@ -89,7 +95,7 @@ project = PythonRepoAnalyzerProject(
     module_name=MODULE_NAME,
     name="projen_template",
     version="0.1.0",
-    pytest_options={"testdir": f"tests/{MODULE_NAME}"},
+    pytest_options={"testdir": f"{ROOT_TEST_DIR}/{MODULE_NAME}"},
     setuptools=True,
     black=True,
     flake8=True,
@@ -103,7 +109,7 @@ project = PythonRepoAnalyzerProject(
 # From root.
 pythonLibSample = SampleDir(
     project,
-    f"src/{project.module_name}",
+    f"{ROOT_MODULE_DIR}/{project.module_name}",
     files={
         "__init__.py": '__version__ = "0.1.0"\n',
         "__main__.py": "\n".join(
