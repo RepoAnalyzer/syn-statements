@@ -5,6 +5,10 @@
       "type": "devenv"
     },
     {
+      "name": "flake8",
+      "type": "devenv"
+    },
+    {
       "name": "projen",
       "version": "0.65.13",
       "type": "devenv"

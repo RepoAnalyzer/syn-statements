@@ -1,8 +1,8 @@
 def hello(name: str) -> str:
     """A simple greeting.
     Args:
-        name (str): Name to greet.
+    name (str): Name to greet.
     Returns:
-        str: greeting message
+    str: greeting message
     """
     return f"Hello {name}!"
