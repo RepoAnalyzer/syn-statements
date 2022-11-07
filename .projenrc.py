@@ -25,8 +25,15 @@ class PythonRepoAnalyzerProject(PythonProject):
     pre_commit = None
     commitizen = None
 
-    def __init__(self, black=True, flake8=True, isort=True, pre_commit=True,
-                 commitizen=True, **options):
+    def __init__(
+        self,
+        black=True,
+        flake8=True,
+        isort=True,
+        pre_commit=True,
+        commitizen=True,
+        **options,
+    ):
         super(PythonRepoAnalyzerProject, self).__init__(**options)
         self.gitignore.exclude(".venv_win")
 
@@ -93,9 +100,15 @@ class PythonRepoAnalyzerProject(PythonProject):
             * flake8,
             * isort.
         """
+        # Each string is in a regex format.
+        pre_commit_targets = [
+            rf"{ROOT_MODULE_DIR}\/.*",
+            rf"{ROOT_TEST_DIR}\/.*",
+            r"\.projenrc.py",
+        ]
         contents = {
             # src and test files.
-            "files": rf"{ROOT_MODULE_DIR}\/.*|{ROOT_TEST_DIR}\/.*",
+            "files": r"|".join(pre_commit_targets),
             "repos": [
                 {
                     "repo": "https://github.com/pre-commit/pre-commit-hooks",
@@ -159,9 +172,9 @@ class PythonRepoAnalyzerProject(PythonProject):
         info, error = exec(command)
 
         if info:
-            self.logger.info(info.decode('utf-8'))
+            self.logger.info(info.decode("utf-8"))
         elif error:
-            self.logger.error(error.decode('utf-8'))
+            self.logger.error(error.decode("utf-8"))
 
     def add_commitizen(self):
         self.commitizen = True
@@ -195,7 +208,7 @@ pythonLibSample = SampleDir(
         "__init__.py": '__version__ = "0.1.0"\n',
         "__main__.py": "\n".join(
             [
-                "from .example import hello",
+                f"from {project.module_name}.example import hello",
                 "",
                 'if __name__ == "__main__":',
                 '    name = input("What is your name? ")',
