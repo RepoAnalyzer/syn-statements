@@ -23,8 +23,10 @@ class PythonRepoAnalyzerProject(PythonProject):
     isort = None
 
     pre_commit = None
+    commitizen = None
 
-    def __init__(self, black=True, flake8=True, isort=True, pre_commit=True, **options):
+    def __init__(self, black=True, flake8=True, isort=True, pre_commit=True,
+                 commitizen=True, **options):
         super(PythonRepoAnalyzerProject, self).__init__(**options)
         self.gitignore.exclude(".venv_win")
 
@@ -36,6 +38,8 @@ class PythonRepoAnalyzerProject(PythonProject):
             self.add_isort()
         if pre_commit:
             self.add_pre_commit()
+        if commitizen:
+            self.add_commitizen()
 
     def add_black(self):
         """Add black to the project as a dev dependency."""
@@ -159,6 +163,10 @@ class PythonRepoAnalyzerProject(PythonProject):
         elif error:
             self.logger.error(error.decode('utf-8'))
 
+    def add_commitizen(self):
+        self.commitizen = True
+        self.add_dev_dependency("commitizen@^2")
+
     def post_synthesize(self):
         super(PythonRepoAnalyzerProject, self).post_synthesize()
         if self.pre_commit:
@@ -173,9 +181,6 @@ project = PythonRepoAnalyzerProject(
     version="0.1.0",
     pytest_options={"testdir": f"{ROOT_TEST_DIR}/{MODULE_NAME}"},
     setuptools=True,
-    black=True,
-    flake8=True,
-    isort=True,
     dev_deps=[
         "pytest",
     ],

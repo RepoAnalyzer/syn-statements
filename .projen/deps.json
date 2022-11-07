@@ -6,6 +6,11 @@
       "type": "devenv"
     },
     {
+      "name": "commitizen",
+      "version": "^2",
+      "type": "devenv"
+    },
+    {
       "name": "flake8",
       "version": "^5",
       "type": "devenv"
