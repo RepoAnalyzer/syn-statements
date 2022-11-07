@@ -4,7 +4,7 @@ from projen_template.example import hello
 
 
 @pytest.mark.parametrize(
-    ("name", "expected"),
+    "name,expected",
     [
         ("A. Musing", "Hello A. Musing!"),
         ("traveler", "Hello traveler!"),

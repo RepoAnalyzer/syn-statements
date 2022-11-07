@@ -1,7 +1,8 @@
+import io
 import subprocess
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
-from projen import IniFile, SampleDir, TomlFile, YamlFile
+from projen import FileBase, IniFile, SampleDir, TomlFile, YamlFile
 from projen.python import PythonProject
 
 MODULE_NAME = "projen_template"
@@ -17,6 +18,15 @@ def exec(command: List[str]) -> Tuple[bytes, bytes]:
     return stdout, stderr
 
 
+class DosIniFile(FileBase):
+    def __init__(self, *args, lines="", **options):
+        super(DosIniFile, self).__init__(*args, **options)
+        self.lines = lines
+
+    def _synthesize_content(self, _) -> Union[str, None]:
+        return self.lines
+
+
 class PythonRepoAnalyzerProject(PythonProject):
     black = None
     flake8 = None
@@ -24,6 +34,8 @@ class PythonRepoAnalyzerProject(PythonProject):
 
     pre_commit = None
     commitizen = None
+
+    pytestConfig = None
 
     def __init__(
         self,
@@ -47,6 +59,8 @@ class PythonRepoAnalyzerProject(PythonProject):
             self.add_pre_commit()
         if commitizen:
             self.add_commitizen()
+        if self.pytest:
+            self.add_pytest()
 
     def add_black(self):
         """Add black to the project as a dev dependency."""
@@ -180,6 +194,48 @@ class PythonRepoAnalyzerProject(PythonProject):
         self.commitizen = True
         self.add_dev_dependency("commitizen@^2")
 
+    def add_pytest(self):
+        additional_options = [
+            "--import-mode=importlib",
+            "--cov",
+            "--no-cov-on-fail",
+            "--cov-branch",
+            "--cov-report=term",
+            "--cov-report=html",
+            "--color=yes",
+            "--code-highlight=yes",
+            "--verbosity=2",
+            "--no-header",
+        ]
+        from configparser import ConfigParser
+
+        pytest_config = ConfigParser()
+        obj = {
+            "pytest": {
+                "addopts": " ".join(additional_options),
+                "testpaths": [ROOT_TEST_DIR],
+                "log_cli": True,
+            },
+        }
+
+        def convert_option_value_to_str(value):
+            if type(value) != list:
+                return str(value)
+
+            return "\n" + "\n".join(value)
+
+        for section, options in obj.items():
+            pytest_config.add_section(section)
+            for option, option_value in options.items():
+                pytest_config.set(
+                    section, option, convert_option_value_to_str(option_value)
+                )
+
+        with io.StringIO() as ss:
+            pytest_config.write(ss)
+            ss.seek(0)
+            self.pytestConfig = DosIniFile(self, "pytest.ini", lines=ss.read())
+
     def post_synthesize(self):
         super(PythonRepoAnalyzerProject, self).post_synthesize()
         if self.pre_commit:
@@ -194,9 +250,6 @@ project = PythonRepoAnalyzerProject(
     version="0.1.0",
     pytest_options={"testdir": f"{ROOT_TEST_DIR}/{MODULE_NAME}"},
     setuptools=True,
-    dev_deps=[
-        "pytest",
-    ],
     sample=False,  # Overriden by custom sample dir.
 )
 

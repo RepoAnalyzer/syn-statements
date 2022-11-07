@@ -31,10 +31,6 @@
       "type": "devenv"
     },
     {
-      "name": "pytest",
-      "type": "devenv"
-    },
-    {
       "name": "twine",
       "version": "3.3.0",
       "type": "devenv"
